@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[60]:
+# In[9]:
 
 
 import sqlite3
@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_score
 from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
@@ -83,24 +84,34 @@ input_column_list = column_list.copy()
 input_column_list.remove('overall_rating')
 output_column_list ='overall_rating'
 
-x_train = df[input_column_list]
-y_train = df[output_column_list]
+x = df[input_column_list]
+y = df[output_column_list]
 
-scaler = StandardScaler().fit(x_train)
-x_t = scaler.transform(x_train)  
+scaler = StandardScaler().fit(x)
+x1 = scaler.transform(x)  
 
 pca = PCA(n_components = 30)
-fit = pca.fit(x_t)
-x_t2 = pca.fit_transform(x_t)
+fit = pca.fit(x1)
+x2 = pca.fit_transform(x1)
+
+ts = int(np.floor(0.20 * df.shape[0]))
 
 
-lnr = LinearRegression()
-model = lnr.fit(x_t2,y_train)
-predictions = lnr.predict(x_t2)
-lnr.score(x_t2,y_train)
+train_x, test_x, train_y, test_y = train_test_split(x2, y, 
+                                                    test_size= ts,
+                                                    random_state=0)
+
+#lnr = LinearRegression()
+#model = lnr.fit(x_t2,y_train)
+#predictions = lnr.predict(x_t2)
+#lnr.score(x_t2,y_train)
 #print(cross_val_score(lnr, X_new, y,cv = 5).mean()) 
 
 dtr = DecisionTreeRegressor()
-model = dtr.fit(x_t2, y_train)
-dtr.score(x_t2, y_train)
+model = dtr.fit(train_x, train_y)
+pred_y = dtr.predict(test_x)
+print(mean_squared_error(test_y, pred_y))
+print(dtr.score(test_x, test_y))
+print(cross_val_score(dtr, x2, y,cv = 5).mean())
+
 
