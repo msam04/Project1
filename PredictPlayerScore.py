@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[9]:
+# In[ ]:
 
 
 import sqlite3
@@ -17,8 +17,21 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from math import sqrt
 
+from urllib.request import urlretrieve
+from os.path import isfile, isdir
+from tqdm import tqdm
+import zipfile
+
+
+zip_ref = zipfile.ZipFile('soccer.zip', 'r')
+zip_ref.extractall()
+zip_ref.close()
+
+#print(isfile('database.sqlite'))
+
+
 # Create your connection.
-cnx = sqlite3.connect('C://Users//Monica//Python_Scripts//PredictPlayer//database.sqlite')
+cnx = sqlite3.connect('database.sqlite')
 df = pd.read_sql_query("SELECT * FROM Player_Attributes", cnx)
 #print(df.head())
 print(df.shape)
